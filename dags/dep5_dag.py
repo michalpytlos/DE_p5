@@ -1,35 +1,48 @@
 from datetime import datetime, timedelta
-import os
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
                                 LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
 
-# AWS_KEY = os.environ.get('AWS_KEY')
-# AWS_SECRET = os.environ.get('AWS_SECRET')
-
+# Default args for each task of the DAG
 default_args = {
     'owner': 'udacity',
-    'start_date': datetime(2019, 1, 12),
+    'start_date': datetime(2019, 8, 12),
+    'depends_on_past': False,
+    'retries': 3,
+    'retry_delay': timedelta(minutes=5),
+    'catchup': False
 }
 
 dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          schedule_interval='0 * * * *'
-        )
+          schedule_interval='0 0 1 1 *'
+          )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift',
+    table='staging_events',
+    s3_bucket=Variable.get('s3_bucket'),
+    s3_prefix=Variable.get('s3_log_prefix'),
+    arn=Variable.get('iam_role_arn'),
+    json_path=Variable.get('s3_log_jsonpath')
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift',
+    table='staging_songs',
+    s3_bucket=Variable.get('s3_bucket'),
+    s3_prefix=Variable.get('s3_song_prefix'),
+    arn=Variable.get('iam_role_arn'),
 )
 
 load_songplays_table = LoadFactOperator(
