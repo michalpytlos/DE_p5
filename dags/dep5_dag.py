@@ -9,19 +9,21 @@ from helpers import SqlQueries
 # Default args for each task of the DAG
 default_args = {
     'owner': 'udacity',
-    'start_date': datetime(2019, 8, 12),
+    'start_date': datetime(2019, 1, 12),
     'depends_on_past': False,
     'retries': 3,
     'retry_delay': timedelta(minutes=5),
     'catchup': False
 }
 
-dag = DAG('udac_example_dag',
+# DAG
+dag = DAG('dep5_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
           schedule_interval='0 0 1 1 *'
           )
 
+# Tasks
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
@@ -52,22 +54,38 @@ load_songplays_table = LoadFactOperator(
 
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift',
+    table='users',
+    insert_query=SqlQueries.user_table_insert,
+    delete_load=False
 )
 
 load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift',
+    table='songs',
+    insert_query=SqlQueries.song_table_insert,
+    delete_load=False
 )
 
 load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift',
+    table='artists',
+    insert_query=SqlQueries.artist_table_insert,
+    delete_load=False
 )
 
 load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift',
+    table='time',
+    insert_query=SqlQueries.time_table_insert,
+    delete_load=False
 )
 
 run_quality_checks = DataQualityOperator(
@@ -76,3 +94,13 @@ run_quality_checks = DataQualityOperator(
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
+
+# Set task dependencies
+start_operator >> (stage_events_to_redshift, stage_songs_to_redshift)
+(stage_events_to_redshift, stage_songs_to_redshift) >> load_songplays_table
+load_songplays_table >> (load_artist_dimension_table,
+                         load_song_dimension_table,
+                         load_user_dimension_table,
+                         load_time_dimension_table) >> run_quality_checks
+run_quality_checks >> end_operator
+
