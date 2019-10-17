@@ -1,8 +1,11 @@
 class SqlQueries:
+
     songplay_table_insert = ("""
-        SELECT
-                md5(events.sessionid || events.start_time) songplay_id,
-                events.start_time, 
+        INSERT INTO {} (play_id, start_time, user_id, level, song_id,
+            artist_id, session_id, location, user_agent)
+            SELECT
+                md5(events.sessionid || events.ts),
+                TIMESTAMP 'epoch' + events.ts/1000 * INTERVAL '1 second',
                 events.userid, 
                 events.level, 
                 songs.song_id, 
@@ -10,9 +13,7 @@ class SqlQueries:
                 events.sessionid, 
                 events.location, 
                 events.useragent
-                FROM (SELECT TIMESTAMP 'epoch' + ts/1000 * interval '1 second' AS start_time, *
-            FROM staging_events
-            WHERE page='NextSong') events
+            FROM (SELECT * FROM staging_events WHERE page='NextSong') events
             LEFT JOIN staging_songs songs
             ON events.song = songs.title
                 AND events.artist = songs.artist_name
@@ -34,13 +35,20 @@ class SqlQueries:
 
     artist_table_insert = ("""
         INSERT INTO {} (artist_id, name, location, latitude, longitude)
-            SELECT distinct artist_id, artist_name, artist_location, artist_latitude, artist_longitude
+            SELECT distinct artist_id, artist_name, artist_location,
+                artist_latitude, artist_longitude
             FROM staging_songs
     """)
 
     time_table_insert = ("""
         INSERT INTO {} (start_time, hour, day, week, month, year, weekday)
-            SELECT start_time, extract(hour from start_time), extract(day from start_time), extract(week from start_time), 
-                   extract(month from start_time), extract(year from start_time), extract(dayofweek from start_time)
+            SELECT
+                start_time,
+                extract(hour from start_time),
+                extract(day from start_time),
+                extract(week from start_time),
+                extract(month from start_time),
+                extract(year from start_time),
+                extract(dayofweek from start_time)
             FROM songplays
     """)
