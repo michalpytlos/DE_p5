@@ -4,7 +4,20 @@ from airflow.utils.decorators import apply_defaults
 
 
 class DataQualityOperator(BaseOperator):
+    """Class used to perform data quality checks
 
+    Args:
+        redshift_conn_id (str): redshift connection id
+        table (str): name of the table to be checked
+        test_query (str): test query
+        expected_res (int/float/str/bool): expected result of the query
+
+    Attributes:
+        redshift_conn_id (str): redshift connection id
+        table (str): name of the table to be checked
+        test_query (str): test query
+        expected_res (int/float/str/bool): expected result of the query
+    """
     ui_color = '#89DA59'
 
     @apply_defaults

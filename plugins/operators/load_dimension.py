@@ -4,6 +4,20 @@ from airflow.utils.decorators import apply_defaults
 
 
 class LoadDimensionOperator(BaseOperator):
+    """Class used to load data to dimension table
+
+    Args:
+        redshift_conn_id (str): redshift connection id
+        table (str): name of the dimension table the data is loaded to
+        insert_query (str): insert query
+        delete_load (bool): delete-load mode flag
+
+    Attributes:
+        redshift_conn_id (str): redshift connection id
+        table (str): name of the dimension table the data is loaded to
+        insert_query (str): insert query
+        delete_load (bool): delete-load mode flag
+    """
 
     ui_color = '#80BD9E'
 

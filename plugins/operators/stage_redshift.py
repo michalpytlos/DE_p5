@@ -4,6 +4,27 @@ from airflow.utils.decorators import apply_defaults
 
 
 class StageToRedshiftOperator(BaseOperator):
+    """Class used to copy data from S3 to staging tables
+
+    Args:
+        redshift_conn_id (str): redshift connection id
+        table (str): name of the staging table the data is copied to
+        s3_bucket (str): S3 bucket name
+        s3_prefix (str): S3 key prefix common to all JSON files with data
+        arn (str): ARN of IAM role allowing Redshift to read from S3
+        region (str, optional): AWS region in which the the S3 bucket is
+            located. Defaults to 'us-west-2'
+        json_path (str, optional): S3 key of JSONPaths file. Defaults to None
+
+    Attributes:
+        redshift_conn_id (str): redshift connection id
+        table (str): name of the staging table the data is copied to
+        s3_bucket (str): S3 bucket name
+        s3_prefix (str): S3 key prefix common to all JSON files with data
+        arn (str): ARN of IAM role allowing Redshift to read from S3
+        region (str): AWS region in which the S3 bucket is located
+        json_path (str): S3 key of JSONPaths file
+    """
     ui_color = '#358140'
 
     copy_query = """

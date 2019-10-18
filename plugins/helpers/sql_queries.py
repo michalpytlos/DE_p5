@@ -1,4 +1,5 @@
 class SqlQueries:
+    """Container for sql statements used by DAG tasks"""
 
     songplay_table_insert = ("""
         INSERT INTO {} (play_id, start_time, user_id, level, song_id,

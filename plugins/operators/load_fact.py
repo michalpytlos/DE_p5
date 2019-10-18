@@ -4,7 +4,18 @@ from airflow.utils.decorators import apply_defaults
 
 
 class LoadFactOperator(BaseOperator):
+    """Class used to load data to fact table
 
+    Args:
+        redshift_conn_id (str): redshift connection id
+        table (str): name of the fact table the data is loaded to
+        insert_query (str): insert query
+
+    Attributes:
+        redshift_conn_id (str): redshift connection id
+        table (str): name of the fact table the data is loaded to
+        insert_query (str): insert query
+    """
     ui_color = '#F98866'
 
     @apply_defaults
