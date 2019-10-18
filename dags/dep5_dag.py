@@ -3,7 +3,7 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
-                                LoadDimensionOperator, DataQualityOperator)
+                               LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
 
 # Default args for each task of the DAG
@@ -110,4 +110,3 @@ load_songplays_table >> (load_artist_dimension_table,
                          load_user_dimension_table,
                          load_time_dimension_table) >> run_quality_checks
 run_quality_checks >> end_operator
-

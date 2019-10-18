@@ -6,12 +6,12 @@ class SqlQueries:
             SELECT
                 md5(events.sessionid || events.ts),
                 TIMESTAMP 'epoch' + events.ts/1000 * INTERVAL '1 second',
-                events.userid, 
-                events.level, 
-                songs.song_id, 
-                songs.artist_id, 
-                events.sessionid, 
-                events.location, 
+                events.userid,
+                events.level,
+                songs.song_id,
+                songs.artist_id,
+                events.sessionid,
+                events.location,
                 events.useragent
             FROM (SELECT * FROM staging_events WHERE page='NextSong') events
             LEFT JOIN staging_songs songs
