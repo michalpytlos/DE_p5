@@ -22,12 +22,12 @@ class DataQualityOperator(BaseOperator):
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         res = redshift.get_records(self.test_query)
-
         check_details = (
             "Test query: {} | Expected result: {} | Returned result: {}")
 
-        if res is None or len(res[0]) < 1:
+        if len(res) < 1:
             self.log.error(f'No records present in {self.table}')
+            self.log.info(f'Tested query: {self.test_query}')
             raise ValueError(f'No records present in {self.table}')
         elif res[0][0] != self.expected_res:
             self.log.error(f'Table {self.table} failed data quality check')
