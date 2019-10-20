@@ -44,17 +44,17 @@ Set the configuration variables in **ct.cfg** as per below:
 
 *&ast;All field values in ct.cfg must be inside single quotes*
 #### Airflow
-1. Set `dags_folder` **in airflow.cfg** to path to DEP5 **dags** directory
+1. Set `dags_folder` in **airflow.cfg** to path to DEP5 **dags** directory
 2. Set `iam_role_arn` field in **dp.cfg** to ARN of IAM role allowing Redshift to read from S3
 3. Import variables from **dp.cfg** to Airflow:
-  1. in Airflow UI open Admin Tab
-  2. Select Variables from dropdown menu
-  3. Select **dp.cfg** and import variables
+    1. in Airflow UI open Admin Tab
+    2. Select Variables from dropdown menu
+    3. Select **dp.cfg** and import variables
 4. Create redshift connection in Airflow:
-  1. in Airflow UI open Admin Tab
-  2. Select Connections from dropdown menu
-  3. Open Create tab
-  4. Fill in the fields as per below:
+    1. in Airflow UI open Admin Tab
+    2. Select Connections from dropdown menu
+    3. Open Create tab
+    4. Fill in the fields as per below:
 
 
   | Field     | Value                                    |
